@@ -3,6 +3,7 @@
 namespace App\Services\Crypto;
 
 use App\Http\Requests\Crypto\ConvertCurrencyRequest;
+use App\Models\CryptoConversion;
 use Illuminate\Support\Facades\App;
 
 /**
@@ -34,6 +35,22 @@ class CryptoService
     {
         $data = $request->validated();
 
-        return $this->cryptoClient->getExchangeRate($data['amount'], $data['currency'], $data['crypto']);
+        $conversion = $this->cryptoClient->getExchangeRate($data['amount'], $data['currency'], $data['crypto']);
+
+        if (empty($conversion)) {
+            return $conversion;
+        }
+
+        $cryptoConversion = new CryptoConversion();
+
+        $cryptoConversion->amount = $conversion->amount;
+        $cryptoConversion->currency = $conversion->from;
+        $cryptoConversion->crypto = $conversion->to;
+        $cryptoConversion->exchange_rate = $conversion->exchangeRate;
+        $cryptoConversion->conversion = $conversion->result;
+
+        $cryptoConversion->save();
+
+        return $conversion;
     }
 }

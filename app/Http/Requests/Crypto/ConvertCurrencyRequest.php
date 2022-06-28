@@ -26,10 +26,9 @@ class ConvertCurrencyRequest extends FormRequest
      */
     public function rules()
     {
-        // TODO Finalize validation rules
         return [
-            'amount' => 'required',
-            'currency' => 'required|string|min:1',
+            'amount' => 'required|numeric|min:0.01',
+            'currency' => 'required|string|in:EUR,USD,PLN',
             'crypto' => 'required|string|min:1',
         ];
     }

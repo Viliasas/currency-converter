@@ -29,10 +29,12 @@ class ExchangerateCryptoClient implements CryptoClient
 
         $data = json_decode($response->getBody()->getContents());
 
-        // TODO Implement error handling
-
         if (empty($data)) {
             return null;
+        }
+
+        if (empty($data->info->rate) && empty($data->result)) {
+            throw new \Exception('Unknown crypto currency specified!');
         }
 
         $rate = new CryptoExchangeRate($currency, $crypto, $amount);
